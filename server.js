@@ -60,7 +60,7 @@ passport.deserializeUser((obj, cb) => {
 })
 
 /*----------------------ENGINE -----------------*/
-app.set('views', path.resolve('views'))
+app.set('views', path.resolve(path.join('src','views')))
 app.set('view engine', 'ejs')
 
 /*----------------------ROUTES -----------------*/
