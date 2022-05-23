@@ -73,7 +73,7 @@ app.get('/register', (req, res) => {
   res.render('register')
 })
 app.get('/login', (req, res ) => {
-  res.render('sessionInit')
+  res.render(path.join('layouts', 'sessionInit'))
 })
 app.post('/register', (req, res) => {
   const data = {
@@ -110,7 +110,7 @@ app.get('/profile', (req, res) => {
       nombre: req.user.displayName,
       foto: req.user.photos[0].value,
     }
-    res.render('profile', {
+    res.render(path.join('layouts','profile'), {
       contador: req.user.contador,
       datos: datosUsuario,
     })
