@@ -122,7 +122,7 @@ app.get('/logout', (req, res) => {
   req.session.destroy()
   res.redirect('/')
 })
-const server = app.listen(8080, () => {
+const server = app.listen((process.env.PORT) || (process.argv[2] || 3000), () => {
   console.log('Server up')
 })
 server.on('error', (error) => {
