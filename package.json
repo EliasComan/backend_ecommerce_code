@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "backend-coderhouse",
   "version": "1.0.0",
   "description": "",
@@ -21,6 +20,7 @@
     "express-session": "^1.17.3",
     "http": "^0.0.1-security",
     "mongoose": "^6.3.3",
+    "multer": "^1.4.4",
     "nodemon": "^2.0.16",
     "passport": "^0.5.2",
     "passport-facebook": "^3.0.0",

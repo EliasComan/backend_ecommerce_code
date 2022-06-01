@@ -1,12 +1,10 @@
-import express from 'express'
-import productsDao from '../../model/products/products.dao.js'
-
-const products = new productsDao()
+const express = require( 'express')
+const path = require( 'path')
 
 const routerproducts = express.Router()
 
 routerproducts.get('/', (req, res) => {
-  res.render('sessionInit')
+  res.render(path.join('layouts', 'sessionInit'))
 })
 routerproducts.post('/', (req, res) => {
   try {
@@ -18,4 +16,4 @@ routerproducts.post('/', (req, res) => {
   }
 })
 
-export default routerproducts
+module.exports = routerproducts

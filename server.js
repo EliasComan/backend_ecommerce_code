@@ -1,13 +1,15 @@
-import bodyParser from 'body-parser'
-import connectMongo from 'connect-mongo'
-import cookieParser from 'cookie-parser'
-import dotenv from 'dotenv'
-import express from 'express'
-import passport from 'passport'
-import path from 'path'
-import productsController from './src/controller/products/products.controller.js'
-import session from 'express-session'
-import strategy from 'passport-facebook'
+const adminController = require('./src/controller/admin/admin.controller.js')
+const bodyParser = require('body-parser')
+const collections = require('./src/model/collections/colecctions.dao.js')
+const connectMongo = require('connect-mongo')
+const cookieParser = require('cookie-parser')
+const dotenv = require('dotenv')
+const express = require('express')
+const passport = require('passport')
+const path = require('path')
+const productsController = require('./src/controller/products/products.controller.js')
+const session = require('express-session')
+const strategy = require('passport-facebook')
 
 /*-----------------------MIDDLEWEARS -----------------*/
 dotenv.config()
@@ -16,12 +18,13 @@ const MongoStore = connectMongo.create({
   mongoUrl: `mongodb+srv://coderhouse:${process.env.PASSWORD_MONGO}@cluster0.wikgb.mongodb.net/sessions?retryWrites=true&w=majority `,
   ttl: 15000000,
 })
+app.use(express.static(path.resolve(__dirname,'public')))
 
 app.use(
   bodyParser.urlencoded({
     extended: true,
   }),
-)
+  )
 app.use(cookieParser())
 app.use(
   session({
@@ -31,9 +34,9 @@ app.use(
     saveUninitialized: false,
   }),
 )
-
 app.use(passport.initialize())
 app.use(passport.session())
+
 
 const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID
 const FACEBOOK_SECRET_KEY = `${process.env.FACEBOOK_SECRET_KEY}`
@@ -59,18 +62,30 @@ passport.deserializeUser((obj, cb) => {
   cb(null, obj)
 })
 
+
 /*----------------------ENGINE -----------------*/
 app.set('views', path.resolve(path.join('src','views')))
 app.set('view engine', 'ejs')
 
+
 /*----------------------ROUTES -----------------*/
 app.use('/products', productsController)
+app.use('/admin', adminController)
+
+
 app.get('/', (req, res) => {
-  res.render('main')
+  let collectionsDatabase ;
+  let user = false;
+  req.isAuthenticated() ? user = true  : user=false;
+  collections.getAll().then(res  => {
+  collectionsDatabase = res})
+  .finally( () => {
+     res.render('main',{user:user, collectionsDatabase:collectionsDatabase})
+    })
 })
-app.post('/', (req, res) => {})
+
 app.get('/register', (req, res) => {
-  res.render('register')
+  res.render(path.join('layouts','register.ejs'))
 })
 app.get('/login', (req, res ) => {
   res.render(path.join('layouts', 'sessionInit'))
@@ -89,39 +104,15 @@ app.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', {
     failureRedirect: '/',
-    successRedirect: '/profile',
+    successRedirect: '/',
     authType: 'reauthenticate',
   }),
 )
-app.get('/admin', (req, res) => {
-  res.render('admin',{collections:true})
-})
-app.get('/admin/addcollection', (req,res ) => {
-  res.render('admin',{addcollection:true})
-})
-
-app.get('/profile', (req, res) => {
-  if (req.isAuthenticated()) {
-    if (!req.user.contador) {
-      req.user.contador = 0
-    }
-    req.user.contador++
-    const datosUsuario = {
-      nombre: req.user.displayName,
-      foto: req.user.photos[0].value,
-    }
-    res.render(path.join('layouts','profile'), {
-      contador: req.user.contador,
-      datos: datosUsuario,
-    })
-  } else {
-    res.redirect('/')
-  }
-})
 app.get('/logout', (req, res) => {
   req.session.destroy()
   res.redirect('/')
 })
+
 const server = app.listen((process.env.PORT) || (process.argv[2] || 8080), () => {
   console.log('Server up')
 })

@@ -1,5 +1,5 @@
-import config from '../../utils/config.js'
-import mongoose from 'mongoose'
+const config = require( '../../utils/config.js')
+const mongoose = require( 'mongoose')
 
 mongoose.connect(config.atlas.url, {
     useNewUrlParser: true,
@@ -7,7 +7,7 @@ mongoose.connect(config.atlas.url, {
 })
 
 
-class productsModel {
+class collectionsModel {
     constructor(colection,schema){
         this.colection = mongoose.model(colection,schema);
     }
@@ -38,4 +38,4 @@ class productsModel {
     }
 }
 
-export default productsModel
+module.exports = collectionsModel
