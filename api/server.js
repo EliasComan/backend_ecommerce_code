@@ -10,6 +10,7 @@ const path = require('path')
 const productsController = require('./src/controller/products/products.controller.js')
 const session = require('express-session')
 const strategy = require('passport-facebook')
+const cors = require('cors')
 
 /*-----------------------MIDDLEWEARS -----------------*/
 dotenv.config()
@@ -36,6 +37,7 @@ app.use(
 )
 app.use(passport.initialize())
 app.use(passport.session())
+app.use(cors())
 
 
 const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID
@@ -82,6 +84,15 @@ app.get('/', (req, res) => {
   .finally( () => {
      res.render('main',{user:user, collectionsDatabase:collectionsDatabase})
     })
+})
+app.get('/data' ,( req, res ) => {
+try {
+  const data = collections.getAll()
+  data.then(data =>
+    res.send(data))
+} catch (error) {
+  console.log(error)
+}
 })
 
 app.get('/register', (req, res) => {
